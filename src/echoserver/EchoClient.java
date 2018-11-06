@@ -24,11 +24,11 @@ public class EchoClient {
 		//Creates a thread with a KeyboardReader Runnable
 		Thread firstthead = new Thread(new KeyboardReader(socket));
 		//Creates a thread with a ScreenWriter Runnable
-    //Thread secondthread = new Thread(new ScreenWriter(socket));
+    Thread secondthread = new Thread(new ScreenWriter(socket));
 		//Starts First Thread
 		firstthead.start();
 		//Starts Second Thread
-		//secondthread.start();
+		secondthread.start();
 	}
 
 
@@ -54,5 +54,29 @@ public class EchoClient {
                 }
 		}
 	}
+
+
+	//ScreenWriter implements the Runnable because it will be implemented in a Thread
+	public class ScreenWriter implements Runnable {
+        Socket s;
+
+        public ScreenWriter(Socket s) {
+            this.s = s;
+        }
+
+        public void run() {
+            int readByte;
+            try {
+                InputStream socketInputStream = s.getInputStream();
+                while ((readByte = socketInputStream.read()) != -1) {
+                    System.out.write(readByte);
+                }
+            } catch (IOException e) {
+							System.err.println("Reached maximum amount of threads.");
+            } finally {
+                System.out.flush();
+            }
+        }
+    }
 
 }
